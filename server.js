@@ -16,11 +16,14 @@ const bcrypt = require("bcryptjs");
 
 // Update CORS configuration
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://desphysio.vercel.app'],
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'https://desphysio.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-  credentials: false // Change to false since we're using token-based auth
+  credentials: true // Change to true to allow credentials
 }));
+
+// Add OPTIONS handling for preflight requests
+app.options('*', cors()); // Enable pre-flight requests for all routes
 
 app.use(express.json());
 
@@ -70,6 +73,16 @@ app.post("/api/upload", upload.single("file"), (req, res, next) => {
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   console.error('Stack:', err.stack);
+  
+  // Handle CORS errors specifically
+  if (err.name === 'CORSError') {
+    return res.status(403).json({
+      success: false,
+      message: 'CORS error - Origin not allowed',
+      error: err.message
+    });
+  }
+  
   next(err);
 });
 

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const Form = require("../controller/form-controller");
+const Payment = require("../controller/payment-controller");
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -30,15 +31,16 @@ const upload = multer({
 // Handle form submissions with optional file uploads
 router.route("/form").post(upload.fields([{ name: 'GaitImage', maxCount: 1 }, { name: 'PostureImage', maxCount: 1 }]), Form);
 
-// Route handler for form submission
-router.post('/form', async (req, res) => {
+// Add the payment route
+router.post("/payment", async (req, res) => {
   try {
-    const formData = req.body; // Assuming you're using express.json() middleware
-    // Process formData here, e.g., save to database
-    res.status(200).json({ success: true, message: 'Form submitted successfully' });
+    const paymentData = req.body; // Assuming you're sending payment data in the request body
+    const newPayment = new Payment(paymentData);
+    await newPayment.save();
+    res.status(201).json({ success: true, message: "Payment processed successfully", payment: newPayment });
   } catch (error) {
-    console.error('Error processing form:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    console.error("Error processing payment:", error);
+    res.status(500).json({ success: false, message: "Failed to process payment" });
   }
 });
 
