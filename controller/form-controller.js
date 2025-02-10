@@ -1,0 +1,227 @@
+const Form = require("../models/form-model");
+
+const Formdata = async (req, res) => {
+  try {
+    // Destructure request body
+    const {
+      DateTime,
+      FilledBy_Name,
+      Name,
+      Age,
+      AadhaarNumber,
+      Type_of_form,
+      Type_of_paitent,
+      Gender,
+      Contact_no,
+      Address,
+      Previous_Occupation,
+      Chief_Complaint,
+      HOPI,
+      Surgical_History,
+      Height,
+      Weight,
+      BMI,
+      BP,
+      PR,
+      RR,
+      Pallor,
+      Icterus,
+      Cyanosis,
+      Clubbing,
+      Erythema,
+      Eruptinosa,
+      Site,
+      Type,
+      Onset,
+      Duration,
+      Progression,
+      Aggravating_Factors,
+      Relieving_Factors,
+      Diurnal_Variation,
+      Irritability,
+      vas,
+      Menstrual_History,
+      GPLAD,
+      G1,
+      G2,
+      G3,
+      G4,
+      Lymphadenopathy,
+      TUG,
+      Special_Tests_Positive,
+      Special_Tests_Negative,
+      Geriatric_Depression_Scale,
+      SF_36_Score,
+      Instrumental_Activity,
+      Fall_Efficacy_Scale,
+      Moca_Scale_Score,
+      Activity_of_Daily_Living,
+      KuppuSwamy_Scale,
+      Oedema,
+      Sleep,
+      Appetite,
+      Diet,
+      Bowel,
+      Bladder,
+      WoundObservation,
+      Swelling,
+      Scars,
+      Tenderness,
+      Spasm,
+      Warmth,
+      SwellinG,
+      OnAuscultation,
+      VoluntaryControl,
+      Reflexes,
+      SixMinuteWalkTest,
+      Grade_of_Dyspnoea,
+      CervicalRange,
+      ShoulderRange,
+      ElbowRange,
+      WristRange,
+      HandRange,
+      TrunkRange,
+      KneeRange,
+      HipRange,
+      AnkleRange,
+      Additional_remarks,
+      Medical_History,
+    } = req.body;
+
+    // Parse JSON fields
+    const parseJsonFields = [
+      "StrengthL",
+      "StrengthR",
+
+      "Tightness",
+
+      "Deformities",
+      "IndicatePain",
+      "NRSNeck",
+      "NRSUpperBack",
+      "NRSLowBack",
+      "NRSHip",
+      "NRSKnee",
+      "NRSAnkleAndFoot",
+      "PainSiteLeft",
+      "PainSiteRight",
+      "MotorExamination",
+      "LowerExtremityFunctionScale",
+      "TheOsteoporosisKnowledgeAssessmentTool",
+      "NeurogicalAssessment",
+    ];
+
+    const parsedFields = parseJsonFields.reduce((acc, field) => {
+      acc[field] = JSON.parse(req.body[field] || "{}");
+      return acc;
+    }, {});
+
+    // Check if GaitImage and PostureImage are present in the request
+    let GaitImage = "";
+    let PostureImage = "";
+    if (req.files && req.files["GaitImage"]) {
+      GaitImage = req.files["GaitImage"][0].path;
+    }
+
+    if (req.files && req.files["PostureImage"]) {
+      PostureImage = req.files["PostureImage"][0].path;
+    }
+    // Create a new document with the provided data
+    const newForm = await Form.create({
+      DateTime,
+      FilledBy_Name,
+      Name,
+      Age,
+      AadhaarNumber,
+      Type_of_form,
+      Type_of_paitent,
+      Gender,
+      Contact_no,
+      Address,
+      Previous_Occupation,
+      Chief_Complaint,
+      HOPI,
+      Surgical_History,
+      Medical_History,
+      Height,
+      Weight,
+      BMI,
+      BP,
+      PR,
+      RR,
+      Pallor,
+      Icterus,
+      Cyanosis,
+      Clubbing,
+      Erythema,
+      Eruptinosa,
+      Site,
+      Type,
+      Onset,
+      Duration,
+      Progression,
+      Aggravating_Factors,
+      Relieving_Factors,
+      Diurnal_Variation,
+      Irritability,
+      vas,
+      Menstrual_History,
+      GPLAD,
+      G1,
+      G2,
+      G3,
+      G4,
+      Lymphadenopathy,
+      TUG,
+      Special_Tests_Positive,
+      Special_Tests_Negative,
+      Geriatric_Depression_Scale,
+      SF_36_Score,
+      Instrumental_Activity,
+      Fall_Efficacy_Scale,
+      Moca_Scale_Score,
+      Activity_of_Daily_Living,
+      KuppuSwamy_Scale,
+      Oedema,
+      Sleep,
+      Appetite,
+      Diet,
+      Bowel,
+      Bladder,
+      WoundObservation,
+      Swelling,
+      Scars,
+      Tenderness,
+      Spasm,
+      Warmth,
+      SwellinG,
+      OnAuscultation,
+      VoluntaryControl,
+      Reflexes,
+      SixMinuteWalkTest,
+      Grade_of_Dyspnoea,
+      CervicalRange,
+      ShoulderRange,
+      ElbowRange,
+      WristRange,
+      HandRange,
+      TrunkRange,
+      KneeRange,
+      HipRange,
+      AnkleRange,
+      GaitImage,
+      PostureImage,
+      Additional_remarks,
+      ...parsedFields, // Spread parsed JSON fields
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Form submitted successfully", form: newForm });
+  } catch (error) {
+    console.error("Form submission error:", error);
+    return res.status(500).json({ message: "Form submission failed" });
+  }
+};
+
+module.exports = Formdata;
